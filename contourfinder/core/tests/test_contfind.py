@@ -7,7 +7,7 @@ class TestMorphContourFinder(TestCase):
 
     def __init__(self, methodName='runTest'):
         super(TestMorphContourFinder, self).__init__(methodName)
-        self.contFinder = MorphContourFinder.withThresholdAndKernel(127, np.ones((3, 3), np.uint8))
+        self.contFinder = MorphContourFinder.withThresholdAndKernelInside(127, np.ones((3, 3), np.uint8))
 
     def test_square(self):
         img = np.zeros([100, 100, 1], np.uint8)

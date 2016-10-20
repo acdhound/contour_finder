@@ -1,5 +1,6 @@
 import cv2
 from imgbin import SimpleBinarizer
+import numpy as np
 
 
 class AbstractContourFinder:
@@ -13,7 +14,7 @@ class MorphContourFinder(AbstractContourFinder):
     """Applies the specified binarization algorithm to an image
     and calculates contour using morphological transformations"""
 
-    def __init__(self, binarizer, kernel, inside):
+    def __init__(self, binarizer, kernel=np.ones((3, 3), np.uint8), inside=True):
         self.binarizer = binarizer
         self.kernel = kernel
         self.inside = inside
@@ -28,9 +29,27 @@ class MorphContourFinder(AbstractContourFinder):
             return cv2.bitwise_and(dilatedBinImg, cv2.bitwise_not(binImg))
 
     @staticmethod
-    def withThresholdAndKernelInside(threshold, kernel):
-        return MorphContourFinder(SimpleBinarizer(threshold), kernel, 1)
+    def withThresholdInside(threshold):
+        return MorphContourFinder(SimpleBinarizer(threshold), inside=True)
 
     @staticmethod
-    def withThresholdAndKernelOutside(threshold, kernel):
-        return MorphContourFinder(SimpleBinarizer(threshold), kernel, 0)
+    def withThresholdOutside(threshold):
+        return MorphContourFinder(SimpleBinarizer(threshold), inside=False)
+
+
+class CannyContourFinder(AbstractContourFinder):
+    """Calculates contour using Canny edge detection algorithm"""
+
+    def __init__(self, low, high, ksize=3, presice=False):
+        self.low = low
+        self.high = high
+        self.ksize = ksize
+        self.presice = presice
+
+    def getContour(self, img):
+        return cv2.Canny(image=img, threshold1=self.low, threshold2=self.high,
+            apertureSize=self.ksize, L2gradient=self.presice)
+
+    @staticmethod
+    def withThresholds(low, high):
+        return CannyContourFinder(low, high)

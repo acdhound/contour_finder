@@ -22,7 +22,7 @@ class TestMorphContourFinder(TestCase):
             self.assertPointValue(img, x, y0 + d, 255)
 
     def test_square_inside(self):
-        self.contFinder = MorphContourFinder.withThresholdAndKernelInside(127, np.ones((3, 3), np.uint8))
+        self.contFinder = MorphContourFinder.withThresholdInside(127)
 
         img = self.createSquare()
         contImg = self.contFinder.getContour(img)
@@ -30,7 +30,7 @@ class TestMorphContourFinder(TestCase):
         self.assertSquareContour(contImg, 50, 50, 29, 255)
 
     def test_square_outside(self):
-        self.contFinder = MorphContourFinder.withThresholdAndKernelOutside(127, np.ones((3, 3), np.uint8))
+        self.contFinder = MorphContourFinder.withThresholdOutside(127)
 
         img = self.createSquare()
         contImg = self.contFinder.getContour(img)

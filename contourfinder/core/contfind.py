@@ -14,27 +14,44 @@ class MorphContourFinder(AbstractContourFinder):
     """Applies the specified binarization algorithm to an image
     and calculates contour using morphological transformations"""
 
-    def __init__(self, binarizer, kernel=np.ones((3, 3), np.uint8), inside=True):
+    def __init__(self, binarizer, inside=True):
         self.binarizer = binarizer
-        self.kernel = kernel
         self.inside = inside
+
+    def getBinContour(self, binImg):
+        kernel = np.ones((3, 3), np.uint8)
+        if self.inside:
+            erosedBinImg = cv2.erode(binImg, kernel, iterations=1)
+            return cv2.bitwise_and(cv2.bitwise_not(erosedBinImg), binImg)
+        else:
+            dilatedBinImg = cv2.dilate(binImg, kernel, iterations=1)
+            return cv2.bitwise_and(dilatedBinImg, cv2.bitwise_not(binImg))
 
     def getContour(self, img):
         binImg = self.binarizer.binarize(img)
-        if self.inside:
-            erosedBinImg = cv2.erode(binImg, self.kernel, iterations=1)
-            return cv2.bitwise_and(cv2.bitwise_not(erosedBinImg), binImg)
-        else:
-            dilatedBinImg = cv2.dilate(binImg, self.kernel, iterations=1)
-            return cv2.bitwise_and(dilatedBinImg, cv2.bitwise_not(binImg))
+        return self.getBinContour(binImg)
 
     @staticmethod
-    def withThresholdInside(threshold):
-        return MorphContourFinder(SimpleBinarizer(threshold), inside=True)
+    def withThreshold(threshold, inside=True):
+        return MorphContourFinder(SimpleBinarizer(threshold), inside)
+
+
+class ClosingMorphContourFinder(MorphContourFinder):
+    """Applies closing morphological operation with specified kernel
+    to binary image before finding contours"""
+
+    def __init__(self, kernel, binarizer, inside=True):
+        MorphContourFinder.__init__(self, binarizer, inside)
+        self.kernel = kernel
+
+    def getBinContour(self, binImg):
+        closedBinImg = cv2.morphologyEx(binImg, cv2.MORPH_CLOSE, self.kernel)
+        return MorphContourFinder.getBinContour(self, closedBinImg)
 
     @staticmethod
-    def withThresholdOutside(threshold):
-        return MorphContourFinder(SimpleBinarizer(threshold), inside=False)
+    def withThresholdAndKSize(threshold, ksize, inside=True):
+        return ClosingMorphContourFinder(
+            np.ones((ksize, ksize), np.uint8), SimpleBinarizer(threshold), inside)
 
 
 class CannyContourFinder(AbstractContourFinder):

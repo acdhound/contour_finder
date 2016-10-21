@@ -1,6 +1,6 @@
 from unittest import TestCase
 import numpy as np
-from ..contfind import MorphContourFinder
+from ..contfind import MorphContourFinder, ClosingMorphContourFinder
 
 
 class TestMorphContourFinder(TestCase):
@@ -11,28 +11,42 @@ class TestMorphContourFinder(TestCase):
         return img
 
     def assertPointValue(self, img, x, y, value):
-        self.assertEqual(img[y, x], value, "unexpected value of pixel ({0},{1})".format(x, y))
+        self.assertEqual(img[y, x], value,
+                         "incorrect value of pixel ({0},{1}): expected: {2}, actual: {3}"
+                            .format(x, y, value, img[y, x]))
 
     def assertSquareContour(self, img, x0, y0, d, value):
         for y in range(y0, y0 + d):
-            self.assertPointValue(img, x0, y, 255)
-            self.assertPointValue(img, x0 + d, y, 255)
+            self.assertPointValue(img, x0, y, value)
+            self.assertPointValue(img, x0 + d, y, value)
         for x in range(x0, x0 + d):
-            self.assertPointValue(img, x, y0, 255)
-            self.assertPointValue(img, x, y0 + d, 255)
+            self.assertPointValue(img, x, y0, value)
+            self.assertPointValue(img, x, y0 + d, value)
 
     def test_square_inside(self):
-        self.contFinder = MorphContourFinder.withThresholdInside(127)
-
+        self.contFinder = MorphContourFinder.withThreshold(127, True)
         img = self.createSquare()
         contImg = self.contFinder.getContour(img)
-
         self.assertSquareContour(contImg, 50, 50, 29, 255)
 
     def test_square_outside(self):
-        self.contFinder = MorphContourFinder.withThresholdOutside(127)
-
+        self.contFinder = MorphContourFinder.withThreshold(127, False)
         img = self.createSquare()
         contImg = self.contFinder.getContour(img)
-
         self.assertSquareContour(contImg, 49, 49, 31, 255)
+
+    def test_square_with_hole(self):
+        self.contFinder = MorphContourFinder.withThreshold(127, True)
+        img = self.createSquare()
+        img[60:65, 60:65] = np.zeros([5, 5, 1])
+        contImg = self.contFinder.getContour(img)
+        self.assertSquareContour(contImg, 50, 50, 29, 255)
+        self.assertSquareContour(contImg, 59, 59, 6, 255)
+
+    def test_closing_square_with_hole(self):
+        self.contFinder = ClosingMorphContourFinder.withThresholdAndKSize(127, 11, True)
+        img = self.createSquare()
+        img[60:65, 60:65] = np.zeros([5, 5, 1])
+        contImg = self.contFinder.getContour(img)
+        self.assertSquareContour(contImg, 50, 50, 29, 255)
+        self.assertSquareContour(contImg, 59, 59, 6, 0)

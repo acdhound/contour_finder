@@ -18,7 +18,8 @@ class TestSimpleBinarizer(TestCase):
                 img[y][x] = (y / 100.0) * 255.0
 
         binImg = self.binarizer.binarize(img)
+        errMsg = 'binirized gradient expected to be {0} at point ({1}, {2})'
         for y in range(0, 40, 5):
-            self.assertEqual(binImg[y][0], 0, 'binirized gradient expected to be black at point (0,' + str(y) + ')')
+            self.assertEqual(binImg[y][0], 0, errMsg.format('black', 0, y))
         for y in range(60, 99, 5):
-            self.assertEqual(binImg[y][0], 255, 'binirized gradient expected to be white at point (0,' + str(y) + ')')
+            self.assertEqual(binImg[y][0], 255, errMsg.format('white', 0, y))

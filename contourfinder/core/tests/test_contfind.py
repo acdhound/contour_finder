@@ -1,6 +1,6 @@
 from unittest import TestCase
 import numpy as np
-from ..contfind import MorphContourFinder, ClosingMorphContourFinder
+from ..edge import MorphEdgeDetector, ClosingMorphEdgeDetector
 
 
 class TestMorphContourFinder(TestCase):
@@ -24,29 +24,29 @@ class TestMorphContourFinder(TestCase):
             self.assertPointValue(img, x, y0 + d, value)
 
     def test_square_inside(self):
-        self.contFinder = MorphContourFinder.withThreshold(127, True)
+        self.contFinder = MorphEdgeDetector.withThreshold(127, True)
         img = self.createSquare()
-        contImg = self.contFinder.getContour(img)
+        contImg = self.contFinder.getEdges(img)
         self.assertSquareContour(contImg, 50, 50, 29, 255)
 
     def test_square_outside(self):
-        self.contFinder = MorphContourFinder.withThreshold(127, False)
+        self.contFinder = MorphEdgeDetector.withThreshold(127, False)
         img = self.createSquare()
-        contImg = self.contFinder.getContour(img)
+        contImg = self.contFinder.getEdges(img)
         self.assertSquareContour(contImg, 49, 49, 31, 255)
 
     def test_square_with_hole(self):
-        self.contFinder = MorphContourFinder.withThreshold(127, True)
+        self.contFinder = MorphEdgeDetector.withThreshold(127, True)
         img = self.createSquare()
         img[60:65, 60:65] = np.zeros([5, 5, 1])
-        contImg = self.contFinder.getContour(img)
+        contImg = self.contFinder.getEdges(img)
         self.assertSquareContour(contImg, 50, 50, 29, 255)
         self.assertSquareContour(contImg, 59, 59, 6, 255)
 
     def test_closing_square_with_hole(self):
-        self.contFinder = ClosingMorphContourFinder.withThresholdAndKSize(127, 11, True)
+        self.contFinder = ClosingMorphEdgeDetector.withThresholdAndKSize(127, 11, True)
         img = self.createSquare()
         img[60:65, 60:65] = np.zeros([5, 5, 1])
-        contImg = self.contFinder.getContour(img)
+        contImg = self.contFinder.getEdges(img)
         self.assertSquareContour(contImg, 50, 50, 29, 255)
         self.assertSquareContour(contImg, 59, 59, 6, 0)

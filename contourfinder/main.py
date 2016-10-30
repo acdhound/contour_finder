@@ -2,7 +2,7 @@ import sys
 
 import cv2
 
-from contourfinder.core.contfind import MorphContourFinder, CannyContourFinder, ClosingMorphContourFinder
+from contourfinder.core.edge import MorphEdgeDetector, CannyEdgeDetector, ClosingMorphEdgeDetector
 
 if __name__ != "__main__" or len(sys.argv) < 6:
     print "invalid arguments"
@@ -17,15 +17,15 @@ cannyThreshold2 = int(sys.argv[5])
 img = cv2.imread(imgPathName, 1)
 img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 cv2.imwrite('image_contour_morph_inside.jpg',
-            MorphContourFinder.withThreshold(threshold, True).getContour(img))
+            MorphEdgeDetector.withThreshold(threshold, True).getEdges(img))
 cv2.imwrite('image_contour_morph_inside_closing.jpg',
-            ClosingMorphContourFinder.withThresholdAndKSize(threshold, kSize, True).getContour(img))
+            ClosingMorphEdgeDetector.withThresholdAndKSize(threshold, kSize, True).getEdges(img))
 cv2.imwrite('image_contour_morph_outside.jpg',
-            MorphContourFinder.withThreshold(threshold, False).getContour(img))
+            MorphEdgeDetector.withThreshold(threshold, False).getEdges(img))
 cv2.imwrite('image_contour_morph_outside_closing.jpg',
-            ClosingMorphContourFinder.withThresholdAndKSize(threshold, kSize, False).getContour(img))
+            ClosingMorphEdgeDetector.withThresholdAndKSize(threshold, kSize, False).getEdges(img))
 cv2.imwrite('image_contour_canny.jpg',
-            CannyContourFinder.withThresholds(cannyThreshold1, cannyThreshold2).getContour(img))
+            CannyEdgeDetector.withThresholds(cannyThreshold1, cannyThreshold2).getEdges(img))
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()

@@ -27,13 +27,10 @@ class SimpleBinarizer(AbstractBinarizer):
 
     def isImgValid(self, img):
         if (len(img.shape) > 2 and img.shape[2] > 1) or img.dtype != np.uint8:
-            raise TypeError('single UINT8 channel image expected')
+            raise Exception('single UINT8 channel image expected')
 
     def calcThreshold(self, img):
         return self.threshold
 
     def calcMaxValue(self, img):
         return 255
-
-
-

@@ -1,6 +1,6 @@
 from unittest import TestCase
 import numpy as np
-from ..edge import MorphEdgeDetector, ClosingMorphEdgeDetector
+from ..detect import MorphEdgeDetector, ClosingMorphEdgeDetector
 
 
 class TestMorphEdgeDetector(TestCase):

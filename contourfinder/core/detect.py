@@ -32,7 +32,7 @@ class MorphEdgeDetector(AbstractEdgeDetector):
     def getEdges(self, img):
         # cv2.imwrite("source.bmp", img)
         binImg = self.binarizer.binarize(img)
-        # cv2.imwrite("C:/bin.bmp", binImg)
+        # cv2.imwrite("bin.bmp", binImg)
         return self.getBinEdges(binImg)
 
     @staticmethod
@@ -50,7 +50,7 @@ class ClosingMorphEdgeDetector(MorphEdgeDetector):
 
     def getBinEdges(self, binImg):
         closedBinImg = cv2.morphologyEx(binImg, cv2.MORPH_CLOSE, self.kernel)
-        # cv2.imwrite("C:/closed.bmp", closedBinImg)
+        # cv2.imwrite("closed.bmp", closedBinImg)
         return MorphEdgeDetector.getBinEdges(self, closedBinImg)
 
     @staticmethod

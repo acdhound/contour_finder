@@ -19,7 +19,7 @@ class MorphEdgeDetector(AbstractEdgeDetector):
         self.inside = inside
 
     def getBinEdges(self, binImg):
-        kernel = np.ones((3, 3), np.uint8)
+        kernel = np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]], np.uint8) #np.ones((3, 3), np.uint8)
         if self.inside:
             erosedBinImg = cv2.erode(binImg, kernel, iterations=1)
             return cv2.bitwise_and(cv2.bitwise_not(erosedBinImg), binImg)
@@ -28,7 +28,9 @@ class MorphEdgeDetector(AbstractEdgeDetector):
             return cv2.bitwise_and(dilatedBinImg, cv2.bitwise_not(binImg))
 
     def getEdges(self, img):
+        # cv2.imwrite("source.bmp", img)
         binImg = self.binarizer.binarize(img)
+        # cv2.imwrite("C:/bin.bmp", binImg)
         return self.getBinEdges(binImg)
 
     @staticmethod
@@ -46,6 +48,7 @@ class ClosingMorphEdgeDetector(MorphEdgeDetector):
 
     def getBinEdges(self, binImg):
         closedBinImg = cv2.morphologyEx(binImg, cv2.MORPH_CLOSE, self.kernel)
+        # cv2.imwrite("C:/closed.bmp", closedBinImg)
         return MorphEdgeDetector.getBinEdges(self, closedBinImg)
 
     @staticmethod

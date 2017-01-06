@@ -19,7 +19,9 @@ class MorphEdgeDetector(AbstractEdgeDetector):
         self.inside = inside
 
     def getBinEdges(self, binImg):
-        kernel = np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]], np.uint8) #np.ones((3, 3), np.uint8)
+        kernel = np.ones((3, 3), np.uint8)
+        # maybe use cross kernel instead of box?
+        # kernel = np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]], np.uint8)
         if self.inside:
             erosedBinImg = cv2.erode(binImg, kernel, iterations=1)
             return cv2.bitwise_and(cv2.bitwise_not(erosedBinImg), binImg)

@@ -1,8 +1,7 @@
 import sys
-
 import cv2
-
 from contourfinder.core.detect import EdgeDetectorFactory
+
 
 if __name__ != '__main__' or len(sys.argv) < 3:
     print 'invalid arguments'

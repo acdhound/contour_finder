@@ -16,15 +16,15 @@ class EdgeComparator(object):
                 act_cnt += (1 if actual[i][j] > 0 else 0)
                 exp_cnt += (1 if expected[i][j] > 0 else 0)
 
-        return (self.actualCoincidentPortion(coinc_cnt, act_cnt, exp_cnt),
-                self.expectedCoincidentPortion(coinc_cnt, act_cnt, exp_cnt))
+        return (self.__actualCoincidentPortion(coinc_cnt, act_cnt, exp_cnt),
+                self.__expectedCoincidentPortion(coinc_cnt, act_cnt, exp_cnt))
 
-    def actualCoincidentPortion(self, coincident, actual, expected):
+    def __actualCoincidentPortion(self, coincident, actual, expected):
         if actual == 0:
             return 1.0 if expected == 0 else 0.0
         return float(coincident) / float(actual)
 
-    def expectedCoincidentPortion(self, coincident, actual, expected):
+    def __expectedCoincidentPortion(self, coincident, actual, expected):
         if expected == 0:
             return 1.0 if actual == 0 else 0.0
         return float(coincident) / float(expected)

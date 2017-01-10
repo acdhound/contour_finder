@@ -2,35 +2,37 @@ import cv2
 import numpy as np
 
 
-class AbstractBinarizer:
-    """Convert image to binary"""
+class Binaizer(object):
+    """Converts an image to binary."""
 
-    def isImgValid(self, img):
+    def binarize(selfself, img):
         pass
 
-    def calcThreshold(self, img):
+
+class ThresholdBinarizer(Binaizer):
+    """Uses simple rule to binarize every pixel of an image: if intensity is less than threshold - set 0, else - set max value.
+    Calculation of threshold and maximum value must be implemented in subclasses. Accepts only single channel 8bit images."""
+
+    def _calcThreshold(self, img):
         pass
 
-    def calcMaxValue(self, img):
+    def _calcMaxValue(self, img):
         pass
 
     def binarize(self, img):
-        self.isImgValid(img)
-        return cv2.threshold(img, self.calcThreshold(img), self.calcMaxValue(img), cv2.THRESH_BINARY)[1]
-
-
-class SimpleBinarizer(AbstractBinarizer):
-    """Simply binarize by specified threshold. Accepts only 1 byte grey images"""
-
-    def __init__(self, threshold):
-        self.threshold = threshold
-
-    def isImgValid(self, img):
         if (len(img.shape) > 2 and img.shape[2] > 1) or img.dtype != np.uint8:
             raise Exception('single UINT8 channel image expected')
+        return cv2.threshold(img, self._calcThreshold(img), self._calcMaxValue(img), cv2.THRESH_BINARY)[1]
 
-    def calcThreshold(self, img):
-        return self.threshold
 
-    def calcMaxValue(self, img):
+class SimpleBinarizer(ThresholdBinarizer):
+    """Converts image to black-white with specified threshold value."""
+
+    def __init__(self, threshold):
+        self.__threshold = threshold
+
+    def _calcThreshold(self, img):
+        return self.__threshold
+
+    def _calcMaxValue(self, img):
         return 255

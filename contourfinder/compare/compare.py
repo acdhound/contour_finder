@@ -1,7 +1,7 @@
 import cv2
 
 
-class EdgeComparator:
+class EdgeComparator(object):
     """Compare expected and actual edges. Comparison result is a tuple consisting of:
         - portion of actual edge points that coincide with expected
         - portion of expected edge points that coincide with actual"""

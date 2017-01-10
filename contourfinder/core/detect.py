@@ -3,22 +3,22 @@ from imgbin import SimpleBinarizer
 import numpy as np
 
 
-class AbstractEdgeDetector:
+class EdgeDetector(object):
     """Returns edges as a binary image"""
 
     def getEdges(self, img):
         pass
 
 
-class MorphEdgeDetector(AbstractEdgeDetector):
+class MorphEdgeDetector(EdgeDetector):
     """Applies the specified binarization algorithm to an image
     and finds edge points using morphological transformations"""
 
     def __init__(self, binarizer, inside=True):
-        self.binarizer = binarizer
+        self.__binarizer = binarizer
         self.inside = inside
 
-    def getBinEdges(self, binImg):
+    def _getBinEdges(self, binImg):
         kernel = np.ones((3, 3), np.uint8)
         # maybe use cross kernel instead of box?
         # kernel = np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]], np.uint8)
@@ -31,13 +31,9 @@ class MorphEdgeDetector(AbstractEdgeDetector):
 
     def getEdges(self, img):
         # cv2.imwrite("source.bmp", img)
-        binImg = self.binarizer.binarize(img)
+        binImg = self.__binarizer.binarize(img)
         # cv2.imwrite("bin.bmp", binImg)
-        return self.getBinEdges(binImg)
-
-    @staticmethod
-    def withThreshold(threshold, inside=True):
-        return MorphEdgeDetector(SimpleBinarizer(threshold), inside)
+        return self._getBinEdges(binImg)
 
 
 class ClosingMorphEdgeDetector(MorphEdgeDetector):
@@ -45,21 +41,16 @@ class ClosingMorphEdgeDetector(MorphEdgeDetector):
     to binary image before finding contours"""
 
     def __init__(self, kernel, binarizer, inside=True):
-        MorphEdgeDetector.__init__(self, binarizer, inside)
+        super(ClosingMorphEdgeDetector, self).__init__(binarizer, inside)
         self.kernel = kernel
 
-    def getBinEdges(self, binImg):
+    def _getBinEdges(self, binImg):
         closedBinImg = cv2.morphologyEx(binImg, cv2.MORPH_CLOSE, self.kernel)
         # cv2.imwrite("closed.bmp", closedBinImg)
-        return MorphEdgeDetector.getBinEdges(self, closedBinImg)
-
-    @staticmethod
-    def withThresholdAndKSize(threshold, ksize, inside=True):
-        return ClosingMorphEdgeDetector(
-            np.ones((ksize, ksize), np.uint8), SimpleBinarizer(threshold), inside)
+        return MorphEdgeDetector._getBinEdges(self, closedBinImg)
 
 
-class CannyEdgeDetector(AbstractEdgeDetector):
+class CannyEdgeDetector(EdgeDetector):
     """Calculates contour using Canny edge detection algorithm"""
 
     def __init__(self, low, high, ksize=3, presice=False):
@@ -72,6 +63,15 @@ class CannyEdgeDetector(AbstractEdgeDetector):
         return cv2.Canny(image=img, threshold1=self.low, threshold2=self.high,
             apertureSize=self.ksize, L2gradient=self.presice)
 
-    @staticmethod
-    def withThresholds(low, high):
+
+class EdgeDetectorFactory(object):
+
+    def createMorphEdgeDetector(self, threshold, inside=True):
+        return MorphEdgeDetector(SimpleBinarizer(threshold), inside)
+
+    def createClosingMorphEdgeDetector(self, threshold, ksize, inside=True):
+        return ClosingMorphEdgeDetector(
+            np.ones((ksize, ksize), np.uint8), SimpleBinarizer(threshold), inside)
+
+    def createCannyEdgeDetector(self, low, high):
         return CannyEdgeDetector(low, high)

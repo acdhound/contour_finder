@@ -2,7 +2,7 @@ import sys
 import cv2
 import os
 from contourfinder.core.detect import EdgeDetectorFactory
-from contourfinder.compare.compare import EdgeComparator
+from contourfinder.compare.compare import EdgeComparatorFactory
 
 
 def read_gray_img(path):
@@ -16,7 +16,7 @@ if __name__ != '__main__' or len(sys.argv) < 4:
 if str(sys.argv[1]) == 'quality':
     actual = read_gray_img(str(sys.argv[2]))
     expected = read_gray_img(str(sys.argv[3]))
-    print 'Result: {0}'.format(EdgeComparator().compareFast(actual, expected)[0])
+    print 'Result: {0}'.format(EdgeComparatorFactory().create().compare(actual, expected)[0])
     exit(0)
 
 imgPath = str(sys.argv[1])

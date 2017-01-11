@@ -32,19 +32,19 @@ edgeDetectorFactory = EdgeDetectorFactory()
 if str(sys.argv[2]) == 'canny':
     threshold1 = int(sys.argv[3])
     threshold2 = int(sys.argv[4])
-    save_parameters('parameters_canny', {'threshold1': threshold1, 'threshold2': threshold2})
+    save_parameters(imgName + '__parameters_canny', {'threshold1': threshold1, 'threshold2': threshold2})
 
     canny_edges = edgeDetectorFactory.createCannyEdgeDetector(threshold1, threshold2).getEdges(img)
     cv2.imwrite(imgName + '__edges_canny.bmp', canny_edges)
 
     expected_edge_area = read_gray_img(str(sys.argv[5]))
-    save_quality_index(canny_edges, expected_edge_area, 'result_canny')
+    save_quality_index(canny_edges, expected_edge_area, imgName + '__result_canny')
 
     exit(0)
 elif str(sys.argv[2]) == "morph":
     threshold = float(sys.argv[3])
     kSize = int(sys.argv[4])
-    save_parameters('parameters_morph', {'threshold': threshold, 'kSize': kSize})
+    save_parameters(imgName + '__parameters_morph', {'threshold': threshold, 'kSize': kSize})
 
     morph_edges_outside = edgeDetectorFactory.createClosingMorphEdgeDetector(threshold, kSize, False).getEdges(img)
     cv2.imwrite(imgName + '__edges_morph_outside.bmp', morph_edges_outside)
@@ -53,8 +53,8 @@ elif str(sys.argv[2]) == "morph":
     cv2.imwrite(imgName + '__edges_morph_inside.bmp', morph_edges_inside)
 
     expected_edge_area = read_gray_img(str(sys.argv[5]))
-    save_quality_index(morph_edges_outside, expected_edge_area, 'result_morph_outside')
-    save_quality_index(morph_edges_inside, expected_edge_area, 'result_morph_inside')
+    save_quality_index(morph_edges_outside, expected_edge_area, imgName + '__result_morph_outside')
+    save_quality_index(morph_edges_inside, expected_edge_area, imgName + '__result_morph_inside')
 
     exit(0)
 else:

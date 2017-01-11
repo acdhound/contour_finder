@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from contourfinder.compare.compare import EdgeComparator
+from contourfinder.compare.compare import EdgeComparatorFactory
 
 
 class TestEdgeComparator(TestCase):
@@ -16,27 +16,27 @@ class TestEdgeComparator(TestCase):
     def test_no_edge_expected(self):
         sq = self.createSquareEdges(1)
         empty = np.zeros([40, 40, 1], np.uint8)
-        result = EdgeComparator().compare(sq, empty)
+        result = EdgeComparatorFactory().create().compare(sq, empty)
         self.assertEqual(result[0], 0.0)
         self.assertEqual(result[1], 0.0)
 
     def test_similar_edge_expected(self):
         sq1 = self.createSquareEdges(1)
         sq2 = self.createSquareEdges(1)
-        result = EdgeComparator().compare(sq1, sq2)
+        result = EdgeComparatorFactory().create().compare(sq1, sq2)
         self.assertEqual(result[0], 1.0)
         self.assertEqual(result[1], 1.0)
 
     def test_thicker_edge_expected(self):
         sq1 = self.createSquareEdges(1)
         sq2 = self.createSquareEdges(4)
-        result = EdgeComparator().compare(sq1, sq2)
+        result = EdgeComparatorFactory().create().compare(sq1, sq2)
         self.assertEqual(result[0], 1.0)
         self.assertAlmostEqual(result[1], 0.3, None, None, 0.1)
 
     def test_thinner_edge_expected(self):
         sq1 = self.createSquareEdges(4)
         sq2 = self.createSquareEdges(1)
-        result = EdgeComparator().compare(sq1, sq2)
+        result = EdgeComparatorFactory().create().compare(sq1, sq2)
         self.assertAlmostEqual(result[0], 0.3, None, None, 0.1)
         self.assertEqual(result[1], 1.0)

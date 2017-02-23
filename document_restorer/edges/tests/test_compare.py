@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from contourfinder.compare.compare import EdgeComparatorFactory
+from document_restorer.edges.compare import EdgeComparatorFactory
 
 
 class TestEdgeComparator(TestCase):

@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from contourfinder.core.imgbin import SimpleBinarizer
+from document_restorer.processing.imgbin import SimpleBinarizer
 
 
 class TestSimpleBinarizer(TestCase):

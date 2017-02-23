@@ -1,6 +1,7 @@
 import cv2
-from imgbin import SimpleBinarizer
 import numpy as np
+
+from document_restorer.processing.imgbin import SimpleBinarizer
 
 
 class EdgeDetector(object):

@@ -1,7 +1,7 @@
 import cv2
-from contourfinder.core.detect import EdgeDetectorFactory
-from contourfinder.core.match import BinaryEdgeMatcher
 
+from document_restorer.edges.detect import EdgeDetectorFactory
+from document_restorer.restore.match import BinaryEdgeMatcher
 
 img1 = cv2.cvtColor(cv2.imread('../resources/img/piece2.png', 1), cv2.COLOR_BGR2GRAY)
 img2 = cv2.cvtColor(cv2.imread('../resources/img/piece3.png', 1), cv2.COLOR_BGR2GRAY)

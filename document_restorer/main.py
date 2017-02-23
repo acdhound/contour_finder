@@ -1,8 +1,10 @@
-import sys
-import cv2
 import os
-from contourfinder.core.detect import EdgeDetectorFactory
-from contourfinder.compare.compare import EdgeComparatorFactory
+import sys
+
+import cv2
+
+from document_restorer.edges.compare import EdgeComparatorFactory
+from document_restorer.edges.detect import EdgeDetectorFactory
 
 edgeComparator = EdgeComparatorFactory().create()
 

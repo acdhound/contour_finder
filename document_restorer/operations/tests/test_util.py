@@ -3,6 +3,28 @@ from ..util import copy_to, count_nonzero
 import numpy as np
 
 
+class TestCountNonzero(TestCase):
+
+    def __init__(self, methodName='run_test'):
+        super(TestCountNonzero, self).__init__(methodName)
+
+    def test_black_image(self):
+        img = np.zeros([5, 5, 1], np.uint8)
+        result = count_nonzero(img)
+        self.assertEqual(result, 0)
+
+    def test_no_black_image(self):
+        img = np.ones([5, 5, 1], np.uint8)
+        result = count_nonzero(img)
+        self.assertEqual(result, 25)
+
+    def test_partially_black_image(self):
+        img = np.zeros([5, 5, 1], np.uint8)
+        img[2:4, 2:4] = np.ones([2, 2, 1], np.uint8)
+        result = count_nonzero(img)
+        self.assertEqual(result, 4)
+
+
 class TestCopyTo(TestCase):
 
     def __init__(self, methodName='run_test'):

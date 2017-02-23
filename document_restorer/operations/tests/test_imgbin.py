@@ -1,8 +1,6 @@
 from unittest import TestCase
-
 import numpy as np
-
-from document_restorer.processing.imgbin import SimpleBinarizer
+from ..imgbin import SimpleBinarizer
 
 
 class TestSimpleBinarizer(TestCase):

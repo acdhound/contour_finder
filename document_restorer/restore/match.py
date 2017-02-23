@@ -60,3 +60,9 @@ class BinaryEdgeMatcher(EdgeMatcher):
                 im_product_for_max = im_product
 
         return delta_for_max, max_nonzero, im_product_for_max
+
+
+class ContentMatcher(object):
+
+    def matchContent(self, top_piece, bottom_piece, gap_line):
+        pass

@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+from ..operations.util import count_nonzero, copy_to
 
 
 class EdgeMatcher(object):
@@ -14,6 +15,14 @@ class EdgeMatcher(object):
 
     def matchEdges(self, top_piece, bottom_piece):
         pass
+
+
+def get_bottom_half(img):
+    return img[img.shape[0] / 2:, :]
+
+
+def get_top_half(img):
+    return img[:img.shape[0] / 2, :]
 
 
 class BinaryEdgeMatcher(EdgeMatcher):
@@ -31,27 +40,20 @@ class BinaryEdgeMatcher(EdgeMatcher):
 
         top_edge = self.edge_detector.getEdges(top_piece)
         bottom_edge = self.edge_detector.getEdges(bottom_piece)
-        width = top_piece.shape[1]
 
-        half_top = top_edge.shape[0] / 2
-        half_bottom = bottom_edge.shape[0] / 2
-        im1 = np.zeros([half_top + half_bottom, width], np.uint8)
-        if half_top == top_edge.shape[0] - half_top:
-            im1[0:half_top, 0:width] = top_edge[half_top:, 0:width]
-        else:
-            im1[0:half_top, 0:width] = top_edge[half_top + 1:, 0:width]
+        top_edge_bottom = get_bottom_half(top_edge)
+        bottom_edge_top = get_top_half(bottom_edge)
+        im1 = np.zeros([top_edge_bottom.shape[0] + bottom_edge_top.shape[0], top_edge.shape[1]], np.uint8)
+        copy_to(top_edge_bottom, im1, 0, 0)
 
         max_nonzero, delta_for_max, im_product_for_max = 0, 0, None
 
-        for delta in range(-half_bottom + 1, half_top + 1):
-            im2 = np.zeros([half_top + half_bottom, width], np.uint8)
-            if delta >= 0:
-                im2[delta:delta + half_bottom, 0:width] = bottom_edge[0:half_bottom, 0:width]
-            else:
-                im2[0:half_bottom + delta, 0:width] = bottom_edge[-delta:half_bottom, 0:width]
+        for delta in range(-bottom_edge_top.shape[0] + 1, top_edge_bottom.shape[0]):
+            im2 = np.zeros([im1.shape[0], im1.shape[1]], np.uint8)
+            copy_to(bottom_edge_top, im2, 0, delta)
 
             im_product = cv2.bitwise_and(im1, im2)
-            nonzero = np.nonzero(im_product)[0].shape[0]
+            nonzero = count_nonzero(im_product)
             if nonzero > max_nonzero:
                 max_nonzero = nonzero
                 delta_for_max = delta
@@ -59,7 +61,7 @@ class BinaryEdgeMatcher(EdgeMatcher):
             elif im_product_for_max is None:
                 im_product_for_max = im_product
 
-        return delta_for_max, max_nonzero, im_product_for_max
+        return abs(delta_for_max - top_edge_bottom.shape[0]), max_nonzero, im_product_for_max
 
 
 class ContentMatcher(object):

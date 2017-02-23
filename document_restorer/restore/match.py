@@ -67,12 +67,12 @@ class BinaryEdgeMatcher(EdgeMatcher):
         im2 = np.copy(im1)
         copy_to(top_piece_bottom, im1, 0, 0)
         copy_to(bottom_piece_top, im2, 0, delta_for_max)
-        stuck_pieces = cv2.bitwise_or(im1, im2)
+        stuck_pieces = cv2.max(im1, im2)
 
         return max_nonzero, stuck_pieces, im_product_for_max
 
 
 class ContentMatcher(object):
 
-    def matchContent(self, top_piece, bottom_piece, gap_line):
+    def matchContent(self, stuck_pieces, gap_line):
         pass

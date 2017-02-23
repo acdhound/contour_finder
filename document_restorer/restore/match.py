@@ -8,9 +8,9 @@ class EdgeMatcher(object):
         Matches edges of two images representing pieces of a paper with text broken into horizontal strips.
     Edges of pieces are shifted relative to each other vertically to find position where they most look like
     two adjacent pieces of rotten paper put together.
-        The result is a tuple of three elements. First is the number of pixels from the bottom of first image to the top
-    of second image for which edges are most adjacent. Second is the value of numeric coefficient representing edges'
-    adjacency when shifted by this number. Third is the image representing supposed gap line between two pieces.
+        The result is a tuple of three elements. First is the value of numeric coefficient representing edges'
+    adjacency, second is the image representing two pieces stuck together and third is corresponding gap line
+    between pieces.
     """
 
     def matchEdges(self, top_piece, bottom_piece):
@@ -61,7 +61,15 @@ class BinaryEdgeMatcher(EdgeMatcher):
             elif im_product_for_max is None:
                 im_product_for_max = im_product
 
-        return abs(delta_for_max - top_edge_bottom.shape[0]), max_nonzero, im_product_for_max
+        top_piece_bottom = get_bottom_half(top_piece)
+        bottom_piece_top = get_top_half(bottom_piece)
+        im1 = np.zeros([im1.shape[0], im1.shape[1]], np.uint8)
+        im2 = np.copy(im1)
+        copy_to(top_piece_bottom, im1, 0, 0)
+        copy_to(bottom_piece_top, im2, 0, delta_for_max)
+        stuck_pieces = cv2.bitwise_or(im1, im2)
+
+        return max_nonzero, stuck_pieces, im_product_for_max
 
 
 class ContentMatcher(object):

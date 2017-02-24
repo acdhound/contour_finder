@@ -10,6 +10,9 @@ class EdgeDetector(object):
     def getEdges(self, img):
         pass
 
+    def getArea(self, img):
+        pass
+
 
 class MorphEdgeDetector(EdgeDetector):
     """Applies the specified binarization algorithm to an image
@@ -19,22 +22,20 @@ class MorphEdgeDetector(EdgeDetector):
         self.__binarizer = binarizer
         self.inside = inside
 
-    def _getBinEdges(self, binImg):
+    def getEdges(self, img):
+        area = self.getArea(img)
         kernel = np.ones((3, 3), np.uint8)
         # maybe use cross kernel instead of box?
         # kernel = np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]], np.uint8)
         if self.inside:
-            erosedBinImg = cv2.erode(binImg, kernel, iterations=1)
-            return cv2.bitwise_and(cv2.bitwise_not(erosedBinImg), binImg)
+            erosedArea = cv2.erode(area, kernel, iterations=1)
+            return cv2.bitwise_and(cv2.bitwise_not(erosedArea), area)
         else:
-            dilatedBinImg = cv2.dilate(binImg, kernel, iterations=1)
-            return cv2.bitwise_and(dilatedBinImg, cv2.bitwise_not(binImg))
+            dilatedArea = cv2.dilate(area, kernel, iterations=1)
+            return cv2.bitwise_and(dilatedArea, cv2.bitwise_not(area))
 
-    def getEdges(self, img):
-        # cv2.imwrite("source.bmp", img)
-        binImg = self.__binarizer.binarize(img)
-        # cv2.imwrite("bin.bmp", binImg)
-        return self._getBinEdges(binImg)
+    def getArea(self, img):
+        return self.__binarizer.binarize(img)
 
 
 class ClosingMorphEdgeDetector(MorphEdgeDetector):
@@ -45,10 +46,9 @@ class ClosingMorphEdgeDetector(MorphEdgeDetector):
         super(ClosingMorphEdgeDetector, self).__init__(binarizer, inside)
         self.kernel = kernel
 
-    def _getBinEdges(self, binImg):
-        closedBinImg = cv2.morphologyEx(binImg, cv2.MORPH_CLOSE, self.kernel)
-        # cv2.imwrite("closed.bmp", closedBinImg)
-        return MorphEdgeDetector._getBinEdges(self, closedBinImg)
+    def getArea(self, img):
+        area = MorphEdgeDetector.getArea(self, img)
+        return cv2.morphologyEx(area, cv2.MORPH_CLOSE, self.kernel)
 
 
 class CannyEdgeDetector(EdgeDetector):
@@ -63,6 +63,9 @@ class CannyEdgeDetector(EdgeDetector):
     def getEdges(self, img):
         return cv2.Canny(image=img, threshold1=self.low, threshold2=self.high,
             apertureSize=self.ksize, L2gradient=self.presice)
+
+    def getArea(self, img):
+        raise NotImplementedError('method not supported')
 
 
 class EdgeDetectorFactory(object):

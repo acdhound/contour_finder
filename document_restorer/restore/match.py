@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-from ..operations.util import count_nonzero, copy_to
+from ..operations.util import copy_to
 
 
 class FragmentsConnector(object):
@@ -45,7 +45,7 @@ class VerticalShiftFragmentsConnector(FragmentsConnector):
             im2 = np.zeros([im1.shape[0], im1.shape[1]], np.uint8)
             copy_to(bottom_edge_top, im2, 0, delta)
             common_edge = cv2.bitwise_and(im1, im2)
-            adjacency = float(count_nonzero(common_edge)) / float(common_edge.shape[1])
+            adjacency = float(np.count_nonzero(common_edge)) / float(common_edge.shape[1])
             if adjacency > max_adjacency:
                 max_adjacency = adjacency
                 delta_for_max = delta

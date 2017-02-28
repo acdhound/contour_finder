@@ -1,5 +1,5 @@
 import numpy as np
-from document_restorer.operations.util import find_min
+from document_restorer.operations.util import find_max
 
 
 class FragmentsSequenceBuilder(object):
@@ -39,8 +39,8 @@ def find_sequence(_values):
     connections_added = 0
     sequence_builder = FragmentsSequenceBuilder()
     while connections_added < values.shape[0] - 1 and np.count_nonzero(~np.isnan(values)) > 0:
-        min_ind = find_min(values)
-        i, j = min_ind[0], min_ind[1]
+        max_cell = find_max(values)
+        i, j = max_cell[0], max_cell[1]
         if i == j:
             values[i, j] = np.nan
             continue
@@ -60,6 +60,7 @@ def find_most_probable_sequence(values):
     sequence, max_probability = [], 0.00
     for n in range(0, values.shape[0]):
         s, p = find_sequence_and_probability(values, n)
+        # print str(p) + ' ' + str(s)
         if p > max_probability:
             sequence = s
             max_probability = p
@@ -74,11 +75,11 @@ def find_sequence_and_probability(_values, first_fragment):
     probability = 1.00
     while len(sequence) < values.shape[0]:
         row = np.copy(values[current_fragment])
-        min_index = find_min(row)
-        next_fragment = min_index[0] if len(row.shape) > 1 else min_index
+        max_index = find_max(row)
+        next_fragment = max_index[0] if len(row.shape) > 1 else max_index
         sequence.append(next_fragment)
         row_sum = np.nansum(row)
-        probability *= (float(row[min_index]) / float(row_sum))
+        probability *= (float(row[max_index]) / float(row_sum))
         values[:, next_fragment] = np.full((values.shape[0], 1), np.nan)
         current_fragment = next_fragment
     return sequence, probability

@@ -46,12 +46,12 @@ save_normalized(results_edges, 'edges_results.bmp')
 save_normalized(results_content, 'content_results.bmp')
 
 results_edges = cv2.normalize(results_edges, results_edges, 1.00, 0.00)
-results_edges = np.full(results_edges.shape, 1.00) - results_edges
 results_content = cv2.normalize(results_content, results_content, 1.00, 0.00)
+results_content = np.full(results_content.shape, 1.00) - results_content
 values = results_content * 0.5 + results_edges * 0.5
 save_normalized(values, 'values.bmp')
 
 print 'restoring fragments sequence...'
-print 'minimum cells method result: ' + str(find_sequence(values))
+print 'maximum cells method result: ' + str(find_sequence(values))
 print 'probability tree method result: ' + str(find_most_probable_sequence(values))
 exit(0)

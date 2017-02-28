@@ -4,7 +4,7 @@ import numpy as np
 from document_restorer.edges.detect import EdgeDetectorFactory
 from document_restorer.restore.match import VerticalShiftFragmentsConnector
 from document_restorer.restore.match import HarrisFragmentsContentMatcher
-from document_restorer.restore.sequence import find_sequence
+from document_restorer.restore.sequence import find_sequence, find_most_probable_sequence
 
 detector = EdgeDetectorFactory().createClosingMorphEdgeDetector(100, 10)
 connector = VerticalShiftFragmentsConnector(detector)
@@ -52,5 +52,6 @@ values = results_content * 0.5 + results_edges * 0.5
 save_normalized(values, 'values.bmp')
 
 print 'restoring fragments sequence...'
-print find_sequence(values)
+print 'minimum cells method result: ' + str(find_sequence(values))
+print 'probability tree method result: ' + str(find_most_probable_sequence(values))
 exit(0)

@@ -55,17 +55,30 @@ def find_sequence(_values):
     return sequence_builder.build()
 
 
-def find_sequence_with_known_first_fragment(values, f0):
-    sequence, restricted_columns = [], []
-    next_index = f0
-    while True:
-        sequence.append(next_index)
-        restricted_columns.append(next_index)
-        if len(sequence) < values.shape[0]:
-            row = np.copy(values[next_index])
-            max_value = np.max(row) + 1.00
-            row[restricted_columns] = max_value
-            next_index = np.argmin(row)
-        else:
-            break
+# todo doesn't consider priori probability of first fragment choice
+def find_most_probable_sequence(values):
+    sequence, max_probability = [], 0.00
+    for n in range(0, values.shape[0]):
+        s, p = find_sequence_and_probability(values, n)
+        if p > max_probability:
+            sequence = s
+            max_probability = p
     return sequence
+
+
+def find_sequence_and_probability(_values, first_fragment):
+    values = np.copy(_values)
+    sequence = [first_fragment]
+    values[:, first_fragment] = np.full((values.shape[0], 1), np.nan)
+    current_fragment = first_fragment
+    probability = 1.00
+    while len(sequence) < values.shape[0]:
+        row = np.copy(values[current_fragment])
+        min_index = find_min(row)
+        next_fragment = min_index[0] if len(row.shape) > 1 else min_index
+        sequence.append(next_fragment)
+        row_sum = np.nansum(row)
+        probability *= (float(row[min_index]) / float(row_sum))
+        values[:, next_fragment] = np.full((values.shape[0], 1), np.nan)
+        current_fragment = next_fragment
+    return sequence, probability

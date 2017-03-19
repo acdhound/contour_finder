@@ -18,13 +18,14 @@ class MorphEdgeDetector(EdgeDetector):
     """Applies the specified binarization algorithm to an image
     and finds edge points using morphological transformations"""
 
-    def __init__(self, binarizer, inside=True):
+    def __init__(self, binarizer, inside=True, thickness=1):
         self.__binarizer = binarizer
         self.inside = inside
+        self.thickness = thickness
 
     def getEdges(self, img):
         area = self.getArea(img)
-        kernel = np.ones((3, 3), np.uint8)
+        kernel = np.ones((self.thickness, self.thickness), np.uint8)
         # maybe use cross kernel instead of box?
         # kernel = np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]], np.uint8)
         if self.inside:
@@ -42,8 +43,8 @@ class ClosingMorphEdgeDetector(MorphEdgeDetector):
     """Applies closing morphological operation with specified kernel
     to binary image before finding contours"""
 
-    def __init__(self, kernel, binarizer, inside=True):
-        super(ClosingMorphEdgeDetector, self).__init__(binarizer, inside)
+    def __init__(self, kernel, binarizer, inside=True, thickness=1):
+        super(ClosingMorphEdgeDetector, self).__init__(binarizer, inside, thickness)
         self.kernel = kernel
 
     def getArea(self, img):
@@ -73,9 +74,9 @@ class EdgeDetectorFactory(object):
     def createMorphEdgeDetector(self, threshold, inside=True):
         return MorphEdgeDetector(SimpleBinarizer(threshold), inside)
 
-    def createClosingMorphEdgeDetector(self, threshold, ksize, inside=True):
+    def createClosingMorphEdgeDetector(self, threshold, ksize, inside=True, thickness=1):
         return ClosingMorphEdgeDetector(
-            np.ones((ksize, ksize), np.uint8), SimpleBinarizer(threshold), inside)
+            np.ones((ksize, ksize), np.uint8), SimpleBinarizer(threshold), inside, thickness)
 
     def createCannyEdgeDetector(self, low, high):
         return CannyEdgeDetector(low, high)

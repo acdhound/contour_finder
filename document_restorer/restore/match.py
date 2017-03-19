@@ -98,5 +98,6 @@ class HarrisFragmentsContentMatcher(FragmentsContentMatcher):
             img = cv2.normalize(img, img, 255, 0, cv2.NORM_MINMAX, cv2.CV_8UC1)
             cv2.imwrite(self.write_result_to, img)
             cv2.imwrite('gap_' + self.write_result_to, gap_line)
+            cv2.imwrite('stuck_' + self.write_result_to, stuck_fragments)
         harris_sum = np.sum(np.abs(harris_values))
         return float(harris_sum) / float(harris_values.shape[0])

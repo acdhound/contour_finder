@@ -25,7 +25,8 @@ class MorphEdgeDetector(EdgeDetector):
 
     def getEdges(self, img):
         area = self.getArea(img)
-        kernel = np.ones((self.thickness, self.thickness), np.uint8)
+        edge_kernel_size = self.thickness * 2 + 1
+        kernel = np.ones((edge_kernel_size, edge_kernel_size), np.uint8)
         # maybe use cross kernel instead of box?
         # kernel = np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]], np.uint8)
         if self.inside:

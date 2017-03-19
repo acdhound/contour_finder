@@ -6,7 +6,7 @@ from document_restorer.restore.match import VerticalShiftFragmentsConnector
 from document_restorer.restore.match import HarrisFragmentsContentMatcher
 from document_restorer.restore.sequence import find_sequence, find_most_probable_sequence
 
-detector = EdgeDetectorFactory().createClosingMorphEdgeDetector(100, 10, True, 7)
+detector = EdgeDetectorFactory().createClosingMorphEdgeDetector(100, 10, True, 3)
 connector = VerticalShiftFragmentsConnector(detector)
 content_matcher = HarrisFragmentsContentMatcher()
 

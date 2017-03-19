@@ -55,7 +55,6 @@ def find_sequence(_values):
     return sequence_builder.build()
 
 
-# todo doesn't consider priori probability of first fragment choice
 def find_most_probable_sequence(values):
     sequence, max_probability = [], 0.00
     for n in range(0, values.shape[0]):
@@ -69,10 +68,11 @@ def find_most_probable_sequence(values):
 
 def find_sequence_and_probability(_values, first_fragment):
     values = np.copy(_values)
+    priori_probability = 1.00 - float(np.sum(values[:, first_fragment])) / float(np.sum(values))
     sequence = [first_fragment]
     values[:, first_fragment] = np.full((values.shape[0], 1), np.nan)
     current_fragment = first_fragment
-    probability = 1.00
+    probability = priori_probability
     while len(sequence) < values.shape[0]:
         row = np.copy(values[current_fragment])
         max_index = find_max(row)

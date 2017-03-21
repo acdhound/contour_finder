@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-from ..operations.util import copy_to
+from ..operations.util import *
 
 
 class FragmentsConnector(object):
@@ -90,14 +90,18 @@ class HarrisFragmentsContentMatcher(FragmentsContentMatcher):
 
     def matchFragmentsContent(self, stuck_fragments, gap_line):
         gap_line_pixels = np.nonzero(gap_line)
-        fragments_harris = cv2.cornerHarris(stuck_fragments, blockSize=2, ksize=3, k=0.04)
-        harris_values = fragments_harris[gap_line_pixels]
+        harris_stuck = cv2.cornerHarris(stuck_fragments, blockSize=2, ksize=3, k=0.04)
+        harris_values = harris_stuck[gap_line_pixels]
         if self.write_result_to is not None:
-            img = np.zeros(fragments_harris.shape, fragments_harris.dtype)
-            img[gap_line_pixels] = harris_values
-            img = cv2.normalize(img, img, 255, 0, cv2.NORM_MINMAX, cv2.CV_8UC1)
-            cv2.imwrite(self.write_result_to, img)
+            harris_gap = np.zeros(harris_stuck.shape, harris_stuck.dtype)
+            harris_gap[gap_line_pixels] = harris_values
+            cv2.imwrite('harris_stuck_' + self.write_result_to, to_norm_cv2_8bit_gray(harris_stuck))
+            cv2.imwrite('harris_gap_' + self.write_result_to, to_norm_cv2_8bit_gray(harris_gap))
             cv2.imwrite('gap_' + self.write_result_to, gap_line)
             cv2.imwrite('stuck_' + self.write_result_to, stuck_fragments)
+            cv2.imwrite('avg_stuck_' + self.write_result_to,
+                        to_norm_cv2_8bit_gray(calculate_avg_in_rows(stuck_fragments)))
+            cv2.imwrite('avg_harris_stuck_' + self.write_result_to,
+                        to_norm_cv2_8bit_gray(calculate_avg_in_rows(harris_stuck)))
         harris_sum = np.sum(np.abs(harris_values))
         return float(harris_sum) / float(harris_values.shape[0])

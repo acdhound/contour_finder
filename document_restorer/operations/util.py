@@ -1,4 +1,5 @@
 import numpy as np
+import cv2
 
 
 def copy_to(src, dst, x0, y0):
@@ -32,3 +33,16 @@ def find_max(arr):
 
 def find_min(arr):
     return np.unravel_index(np.nanargmin(arr), arr.shape)
+
+
+def calculate_avg_in_rows(img):
+    avg = np.zeros([img.shape[0], 50], img.dtype)
+    for i in range(0, img.shape[0]):
+        value = np.sum(img[i, :]) / img.shape[1]
+        avg[i, :] = np.full([1, avg.shape[1]], value, dtype=avg.dtype)
+    return avg
+
+
+def to_norm_cv2_8bit_gray(img):
+    return cv2.normalize(img, img, 255, 0, cv2.NORM_MINMAX, cv2.CV_8UC1)
+

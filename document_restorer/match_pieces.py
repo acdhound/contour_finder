@@ -33,11 +33,11 @@ results_content = np.zeros([len(images), len(images), 1])
 results_edges = np.zeros([len(images), len(images), 1])
 for i in range(0, len(images)):
     for j in range(0, len(images)):
-        # if j == i + 1 or ((i, j) in [(3, 2), (4, 0), (5, 1), (2, 4), (3, 0), (0, 5), (4, 1)]):
-        #     content_matcher.write_result_to = 'match_{0}_{1}.png'.format(i + 1, j + 1)
-        #     need_print_result = True
-        # else:
-        #     content_matcher.write_result_to = None
+        if j == i + 1 or ((i, j) in [(1, 2), (2, 3), (3, 4), (4, 5), (1, 5), (2, 6), (3, 5), (4, 1)]):
+            content_matcher.write_result_to = 'match_{0}_{1}.png'.format(i + 1, j + 1)
+            need_print_result = True
+        else:
+            content_matcher.write_result_to = None
         result = match_pieces(images[i], images[j])
         results_content[i, j] = result[0]
         results_edges[i, j] = result[1]

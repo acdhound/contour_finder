@@ -105,3 +105,20 @@ class HarrisFragmentsContentMatcher(FragmentsContentMatcher):
                         to_norm_cv2_8bit_gray(calculate_avg_in_rows(harris_stuck)))
         harris_sum = np.sum(np.abs(harris_values))
         return float(harris_sum) / float(harris_values.shape[0])
+
+
+class SobelFragmentsContentMatcher(FragmentsContentMatcher):
+
+    def __init__(self):
+        self.write_result_to = None
+
+    def matchFragmentsContent(self, stuck_fragments, gap_line):
+        sobel_x_stuck = cv2.Sobel(stuck_fragments, cv2.CV_8U, 0, 1, ksize=1)
+        gap_line_pixels = np.nonzero(gap_line)
+        sobel_x_values = sobel_x_stuck[gap_line_pixels]
+        if self.write_result_to is not None:
+            sobel_x_gap = np.zeros(sobel_x_stuck.shape, sobel_x_stuck.dtype)
+            sobel_x_gap[gap_line_pixels] = sobel_x_values
+            cv2.imwrite('sobel_gap_' + self.write_result_to, sobel_x_gap)
+            cv2.imwrite('sobel_stuck_' + self.write_result_to, sobel_x_stuck)
+        return float(np.sum(sobel_x_values)) / float(sobel_x_values.shape[0])

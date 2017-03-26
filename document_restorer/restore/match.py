@@ -24,8 +24,9 @@ class FragmentsConnection(object):
 
 class VerticalShiftFragmentsConnector(FragmentsConnector):
 
-    def __init__(self, edge_detector):
+    def __init__(self, edge_detector, x_range=[0]):
         self.edge_detector = edge_detector
+        self.x_range = x_range
 
     def connectFragments(self, top_fragment, bottom_fragment):
         if top_fragment.shape[1] != bottom_fragment.shape[1]:
@@ -39,26 +40,27 @@ class VerticalShiftFragmentsConnector(FragmentsConnector):
         im1 = np.zeros([top_edge_bottom.shape[0] + bottom_edge_top.shape[0], top_edge.shape[1]], np.uint8)
         copy_to(top_edge_bottom, im1, 0, 0)
 
-        max_adjacency, delta_for_max, gap_lines = 0, 0, None
+        max_adjacency, delta_for_max, gap_lines = 0, [], None
 
-        for delta in range(-bottom_edge_top.shape[0] + 1, top_edge_bottom.shape[0]):
-            im2 = np.zeros([im1.shape[0], im1.shape[1]], np.uint8)
-            copy_to(bottom_edge_top, im2, 0, delta)
-            common_edge = cv2.bitwise_and(im1, im2)
-            adjacency = float(np.count_nonzero(common_edge)) / float(common_edge.shape[1])
-            if adjacency > max_adjacency:
-                max_adjacency = adjacency
-                delta_for_max = delta
-                gap_lines = [im1, im2]
-            elif gap_lines is None:
-                gap_lines = [im1, im2]
+        for delta_x in self.x_range:
+            for delta_y in range(-bottom_edge_top.shape[0] + 1, top_edge_bottom.shape[0]):
+                im2 = np.zeros([im1.shape[0], im1.shape[1]], np.uint8)
+                copy_to(bottom_edge_top, im2, delta_x, delta_y)
+                common_edge = cv2.bitwise_and(im1, im2)
+                adjacency = float(np.count_nonzero(common_edge)) / float(common_edge.shape[1])
+                if adjacency > max_adjacency:
+                    max_adjacency = adjacency
+                    delta_for_max = [delta_x, delta_y]
+                    gap_lines = [im1, im2]
+                elif gap_lines is None:
+                    gap_lines = [im1, im2]
 
         top_fragment_bottom = self.__get_bottom_half(top_fragment)
         bottom_fragment_top = self.__get_top_half(bottom_fragment)
         im1 = np.zeros([im1.shape[0], im1.shape[1]], np.uint8)
         im2 = np.copy(im1)
         copy_to(top_fragment_bottom, im1, 0, 0)
-        copy_to(bottom_fragment_top, im2, 0, delta_for_max)
+        copy_to(bottom_fragment_top, im2, delta_for_max[0], delta_for_max[1])
 
         return self.__stick_over(max_adjacency, im2, gap_lines[1], im1, gap_lines[0])
 
@@ -74,6 +76,8 @@ class VerticalShiftFragmentsConnector(FragmentsConnector):
         stuck_fragments = np.copy(fragment_below)
         stuck_fragments[above_area_pixels] = fragment_above[above_area_pixels]
         gap_line = cv2.bitwise_or(np.copy(edge_above), cv2.bitwise_and(edge_below, cv2.bitwise_not(above_area)))
+        #what about this?
+        # gap_line = cv2.bitwise_and(edge_above, edge_below)
         return FragmentsConnection(adjacency, stuck_fragments, gap_line)
 
 

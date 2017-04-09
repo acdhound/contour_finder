@@ -61,8 +61,9 @@ class VerticalShiftFragmentsConnector(FragmentsConnector):
         im2 = np.copy(im1)
         copy_to(top_fragment_bottom, im1, 0, 0)
         copy_to(bottom_fragment_top, im2, delta_for_max[0], delta_for_max[1])
+        crop_area = [delta_for_max[1] + bottom_edge_top.shape[0], im1.shape[1]]
 
-        return self.__stick_over(max_adjacency, im2, gap_lines[1], im1, gap_lines[0])
+        return self.__stick_over(max_adjacency, im2, gap_lines[1], im1, gap_lines[0], crop_area)
 
     def __get_bottom_half(self, img):
         return img[img.shape[0] / 2:, :]
@@ -70,7 +71,7 @@ class VerticalShiftFragmentsConnector(FragmentsConnector):
     def __get_top_half(self, img):
         return img[:img.shape[0] / 2, :]
 
-    def __stick_over(self, adjacency, fragment_above, edge_above, fragment_below, edge_below):
+    def __stick_over(self, adjacency, fragment_above, edge_above, fragment_below, edge_below, crop_area):
         above_area = self.edge_detector.getArea(fragment_above)
         above_area_pixels = np.nonzero(above_area)
         stuck_fragments = np.copy(fragment_below)
@@ -78,7 +79,7 @@ class VerticalShiftFragmentsConnector(FragmentsConnector):
         gap_line = cv2.bitwise_or(np.copy(edge_above), cv2.bitwise_and(edge_below, cv2.bitwise_not(above_area)))
         #what about this?
         # gap_line = cv2.bitwise_and(edge_above, edge_below)
-        return FragmentsConnection(adjacency, stuck_fragments, gap_line)
+        return FragmentsConnection(adjacency, stuck_fragments[0:crop_area[0], 0:crop_area[1]], gap_line[0:crop_area[0], 0:crop_area[1]])
 
 
 class FragmentsContentMatcher(object):

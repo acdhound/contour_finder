@@ -1,5 +1,6 @@
 import numpy as np
 from document_restorer.operations.util import find_max
+from document_restorer.operations.util import *
 
 
 class FragmentsSequenceBuilder(object):
@@ -83,3 +84,21 @@ def find_sequence_and_probability(_values, first_fragment):
         values[:, next_fragment] = np.full((values.shape[0], 1), np.nan)
         current_fragment = next_fragment
     return sequence, probability
+
+
+def restore_document(sequence, stuck_connections):
+    restored_connections = []
+    height = 0
+    f0 = None
+    for f1 in sequence:
+        if f0 is not None:
+            stuck_pair = stuck_connections['{0}-{1}'.format(f0, f1)]
+            restored_connections.append(stuck_pair)
+            height += stuck_pair.shape[0]
+        f0 = f1
+    restored_document = np.zeros([height, restored_connections[0].shape[1]], restored_connections[0].dtype)
+    y = 0
+    for connection in restored_connections:
+        copy_to(connection, restored_document, 0, y)
+        y += connection.shape[0]
+    return restored_document

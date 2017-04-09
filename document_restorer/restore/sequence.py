@@ -86,19 +86,21 @@ def find_sequence_and_probability(_values, first_fragment):
     return sequence, probability
 
 
-def restore_document(sequence, stuck_connections):
+def restore_document(sequence, connections):
     restored_connections = []
     height = 0
     f0 = None
     for f1 in sequence:
         if f0 is not None:
-            stuck_pair = stuck_connections['{0}-{1}'.format(f0, f1)]
-            restored_connections.append(stuck_pair)
-            height += stuck_pair.shape[0]
+            connection = connections['{0}-{1}'.format(f0, f1)]
+            restored_connections.append(connection)
+            height += connection.stuck_fragments.shape[0]
         f0 = f1
-    restored_document = np.zeros([height, restored_connections[0].shape[1]], restored_connections[0].dtype)
-    y = 0
+    restored_document = np.zeros(
+        [height, restored_connections[0].stuck_fragments.shape[1]], restored_connections[0].stuck_fragments.dtype)
+    x, y = 0, 0
     for connection in restored_connections:
-        copy_to(connection, restored_document, 0, y)
-        y += connection.shape[0]
+        copy_to(connection.stuck_fragments, restored_document, x, y)
+        x += connection.offset[0]
+        y += connection.stuck_fragments.shape[0]
     return restored_document

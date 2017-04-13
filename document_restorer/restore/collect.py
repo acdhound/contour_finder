@@ -37,7 +37,7 @@ class FragmentsCollector(object):
 
     def collectFragments(self, img):
         binary = self.edge_detector.getArea(img)
-        contours = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[1]
+        contours = cv2.findContours(np.copy(binary), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[1]
 
         fragments = []
         for cont in contours:

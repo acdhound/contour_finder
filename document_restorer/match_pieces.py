@@ -7,7 +7,7 @@ from document_restorer.restore.match import HarrisFragmentsContentMatcher, Sobel
 from document_restorer.restore.sequence import find_sequence, find_most_probable_sequence, restore_document
 from restore.collect import FragmentsCollector
 
-detector = EdgeDetectorFactory().createClosingMorphEdgeDetector(150, 9, True, 1)
+detector = EdgeDetectorFactory().createClosingMorphEdgeDetector(160, 9, True, 1)
 connector = VerticalShiftFragmentsConnector(detector, [0])
 content_matcher = HarrisFragmentsContentMatcher()
 
@@ -49,13 +49,13 @@ save_normalized(results_content, 'content_results.bmp')
 results_edges = cv2.normalize(results_edges, results_edges, 1.00, 0.00)
 results_content = cv2.normalize(results_content, results_content, 1.00, 0.00)
 results_content = np.full(results_content.shape, 1.00) - results_content
-values = results_content * 0.5 + results_edges * 0.5
+values = results_content * 0.2 + results_edges * 0.8
 save_normalized(values, 'values.bmp')
 
 print 'restoring fragments sequence...'
 sequence = find_sequence(values)
 print 'maximum cells method result: ' + str(sequence)
-# print 'probability tree method result: ' + str(find_most_probable_sequence(values))
+print 'probability tree method result: ' + str(find_most_probable_sequence(values))
 
 cv2.imwrite('restored_document.bmp', restore_document(sequence, connections))
 exit(0)

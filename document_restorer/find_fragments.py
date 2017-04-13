@@ -25,6 +25,8 @@ for f in fragments:
 
     cv2.rectangle(img_colored, f.source_rect.topLeft(), f.source_rect.bottomRight(), (0, 0, 255), 1)
     cv2.drawContours(img_colored, [f.source_contour], -1, (0, 255, 0), 1)
+    cv2.putText(img_colored, str(fragments.index(f)),
+                (10, f.source_rect.y + f.source_rect.h/2 + 8), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 0))
 
 cv2.imwrite('segmented.png', img_colored)
 cv2.imshow('segmented', img_colored)

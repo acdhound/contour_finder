@@ -5,9 +5,10 @@ from document_restorer.edges.detect import EdgeDetectorFactory
 from document_restorer.restore.match import VerticalShiftFragmentsConnector
 from document_restorer.restore.match import HarrisFragmentsContentMatcher, SobelFragmentsContentMatcher
 from document_restorer.restore.sequence import find_sequence, find_most_probable_sequence, restore_document
+from restore.collect import FragmentsCollector
 
-detector = EdgeDetectorFactory().createClosingMorphEdgeDetector(180, 5, True, 1)
-connector = VerticalShiftFragmentsConnector(detector, range(-5, 5))
+detector = EdgeDetectorFactory().createClosingMorphEdgeDetector(150, 9, True, 1)
+connector = VerticalShiftFragmentsConnector(detector, [0])
 content_matcher = HarrisFragmentsContentMatcher()
 
 
@@ -22,24 +23,22 @@ def save_normalized(mat, name):
     img = cv2.normalize(mat, img, 255, 0, cv2.NORM_MINMAX, cv2.CV_8UC1)
     cv2.imwrite(name, img)
 
-pieces_num = 18
-images = []
-print 'reading images...'
-for n in range(1, pieces_num + 1):
-    images.append(cv2.cvtColor(cv2.imread('../resources/img/documents/4/piece{0}.png'.format(n), 1), cv2.COLOR_BGR2GRAY))
+fragments = FragmentsCollector(detector).collectFragments(
+    cv2.cvtColor(cv2.imread('../resources/img/documents/4/fragments.bmp', 1), cv2.COLOR_BGR2GRAY)
+)
 
 print 'matching fragments...'
-results_content = np.zeros([len(images), len(images), 1])
-results_edges = np.zeros([len(images), len(images), 1])
+results_content = np.zeros([len(fragments), len(fragments), 1])
+results_edges = np.zeros([len(fragments), len(fragments), 1])
 connections = {}
-for i in range(0, len(images)):
-    for j in range(0, len(images)):
+for i in range(0, len(fragments)):
+    for j in range(0, len(fragments)):
         # if (i, j) in [(0, 1), (1, 2), (1, 13), (2, 3), (3, 4), (4, 5), (1, 5), (2, 6), (3, 5), (4, 1)]:
         #     content_matcher.write_result_to = 'match_{0}_{1}.png'.format(i + 1, j + 1)
         #     need_print_result = True
         # else:
         #     content_matcher.write_result_to = None
-        result = match_pieces(images[i], images[j])
+        result = match_pieces(fragments[i], fragments[j])
         results_content[i, j] = result[0]
         results_edges[i, j] = result[1].adjacency
         connections['{0}-{1}'.format(i, j)] = result[1]

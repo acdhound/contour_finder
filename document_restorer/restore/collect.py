@@ -29,6 +29,11 @@ class Fragment(object):
         self.source_rect = source_rect
         self.source_contour = source_contour
 
+    def drawContour(self, thickness=1):
+        contour_img = np.zeros(self.img.shape, dtype=self.img.dtype)
+        cv2.drawContours(contour_img, [self.contour], -1, 255, thickness)
+        return contour_img
+
 
 class FragmentsCollector(object):
 

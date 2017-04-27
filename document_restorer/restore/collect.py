@@ -37,11 +37,11 @@ class Fragment(object):
 
 class FragmentsCollector(object):
 
-    def __init__(self, edge_detector):
-        self.edge_detector = edge_detector
+    def __init__(self, binarizer):
+        self.binarizer = binarizer
 
     def collectFragments(self, img):
-        binary = self.edge_detector.getArea(img)
+        binary = self.binarizer.binarize(img)
         contours = cv2.findContours(np.copy(binary), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[1]
 
         fragments = []

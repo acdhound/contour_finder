@@ -36,3 +36,14 @@ class SimpleBinarizer(ThresholdBinarizer):
 
     def _calcMaxValue(self, img):
         return 255
+
+
+class MorphCloseBinarizer(SimpleBinarizer):
+
+    def __init__(self, threshold, ksize):
+        super(MorphCloseBinarizer, self).__init__(threshold)
+        self.__kernel = np.ones((ksize, ksize), np.uint8)
+
+    def binarize(self, img):
+        bin = super(MorphCloseBinarizer, self).binarize(img)
+        return cv2.morphologyEx(bin, cv2.MORPH_CLOSE, self.__kernel)

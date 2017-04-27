@@ -25,9 +25,11 @@ class FragmentsConnection(object):
 
 class VerticalShiftFragmentsConnector(FragmentsConnector):
 
-    def __init__(self, edge_detector, x_range=[0]):
-        self.edge_detector = edge_detector
-        self.x_range = x_range
+    def __init__(self, x_range=None):
+        if x_range is None:
+            self.x_range = [0]
+        else:
+            self.x_range = x_range
 
     def connectFragments(self, top_fragment, bottom_fragment):
         top_edge = top_fragment.drawContour()

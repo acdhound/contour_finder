@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import sys
 
 from document_restorer.operations.imgbin import MorphCloseBinarizer
 from document_restorer.restore.match import VerticalShiftFragmentsConnector
@@ -7,9 +8,19 @@ from document_restorer.restore.match import HarrisFragmentsContentMatcher, Sobel
 from document_restorer.restore.sequence import find_sequence, find_most_probable_sequence, restore_document
 from restore.collect import FragmentsCollector
 
-binarizer = MorphCloseBinarizer(160, 5)
+img_path = str(sys.argv[1])
+threshold = int(sys.argv[2])
+kernel_size = int(sys.argv[3])
+method = str(sys.argv[4])
+
+binarizer = MorphCloseBinarizer(threshold, kernel_size)
 connector = VerticalShiftFragmentsConnector()
-content_matcher = SobelFragmentsContentMatcher()
+if method == 'sobel':
+    content_matcher = SobelFragmentsContentMatcher()
+elif method == 'harris':
+    content_matcher = HarrisFragmentsContentMatcher()
+else:
+    raise Exception('Unknown method ' + method)
 
 
 def match_pieces(piece1, piece2):
@@ -23,9 +34,8 @@ def save_normalized(mat, name):
     img = cv2.normalize(mat, img, 255, 0, cv2.NORM_MINMAX, cv2.CV_8UC1)
     cv2.imwrite(name, img)
 
-fragments = FragmentsCollector(binarizer).collectFragments(
-    cv2.cvtColor(cv2.imread('../resources/img/documents/4/fragments.bmp', 1), cv2.COLOR_BGR2GRAY)
-)
+print 'collecting fragments...'
+fragments = FragmentsCollector(binarizer).collectFragments(cv2.imread(img_path, cv2.IMREAD_GRAYSCALE))
 
 print 'matching fragments...'
 results_content = np.zeros([len(fragments), len(fragments), 1])
@@ -39,7 +49,7 @@ for i in range(0, len(fragments)):
         else:
             content_matcher.write_result_to = None
         result = match_pieces(fragments[i], fragments[j])
-        results_content[i, j] = result[0]
+        results_content[i, j] = -1 * result[0]
         results_edges[i, j] = result[1].adjacency
         connections['{0}-{1}'.format(i, j)] = result[1]
 
@@ -48,7 +58,6 @@ save_normalized(results_content, 'content_results.bmp')
 
 results_edges = cv2.normalize(results_edges, results_edges, 1.00, 0.00)
 results_content = cv2.normalize(results_content, results_content, 1.00, 0.00)
-results_content = np.full(results_content.shape, 1.00) - results_content
 values = results_content * 0.2 + results_edges * 0.8
 save_normalized(values, 'values.bmp')
 

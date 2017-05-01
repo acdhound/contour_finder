@@ -1,7 +1,6 @@
 import sys
 
 import cv2
-import numpy as np
 
 from restore.collect import FragmentsCollector
 from operations.imgbin import MorphCloseBinarizer
@@ -17,11 +16,6 @@ binarizer = MorphCloseBinarizer(threshold, kernel_size)
 collector = FragmentsCollector(binarizer)
 fragments = collector.collectFragments(img)
 for f in fragments:
-    # f_img = cv2.cvtColor(np.copy(f.img), cv2.COLOR_GRAY2BGR)
-    # cv2.drawContours(f_img, [f.contour], -1, (0, 255, 0), 1)
-    # cv2.imshow('fragment', f_img)
-    # cv2.waitKey(0)
-
     cv2.rectangle(img_colored, f.source_rect.topLeft(), f.source_rect.bottomRight(), (0, 0, 255), 1)
     cv2.drawContours(img_colored, [f.source_contour], -1, (0, 255, 0), 1)
     cv2.putText(img_colored, str(fragments.index(f)),

@@ -12,6 +12,10 @@ img_path = str(sys.argv[1])
 threshold = int(sys.argv[2])
 kernel_size = int(sys.argv[3])
 method = str(sys.argv[4])
+if len(sys.argv) < 6:
+    alpha, beta = 0.8, 0.2
+else:
+    alpha, beta = float(sys.argv[5]), float(sys.argv[6])
 
 binarizer = MorphCloseBinarizer(threshold, kernel_size)
 connector = VerticalShiftFragmentsConnector()
@@ -58,7 +62,7 @@ save_normalized(results_content, 'content_results.bmp')
 
 results_edges = cv2.normalize(results_edges, results_edges, 1.00, 0.00)
 results_content = cv2.normalize(results_content, results_content, 1.00, 0.00)
-values = results_content * 0.2 + results_edges * 0.8
+values = results_edges * alpha + results_content * beta
 save_normalized(values, 'values.bmp')
 
 print 'restoring fragments sequence...'

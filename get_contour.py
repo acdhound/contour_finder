@@ -1,6 +1,6 @@
 import cv2
 import sys
-from edges.detect import EdgeDetectorFactory
+from core.edges.detect import EdgeDetectorFactory
 
 
 img_path = str(sys.argv[1])

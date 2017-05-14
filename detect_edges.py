@@ -3,8 +3,8 @@ import sys
 
 import cv2
 
-from document_restorer.edges.compare import EdgeComparatorFactory
-from document_restorer.edges.detect import EdgeDetectorFactory
+from core.edges.compare import EdgeComparatorFactory
+from core.edges.detect import EdgeDetectorFactory
 
 edgeComparator = EdgeComparatorFactory().create()
 

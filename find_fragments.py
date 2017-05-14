@@ -2,8 +2,8 @@ import sys
 
 import cv2
 
-from restore.collect import FragmentsCollector
-from operations.imgbin import MorphCloseBinarizer
+from core.restore.collect import FragmentsCollector
+from core.operations.imgbin import MorphCloseBinarizer
 
 img_path = str(sys.argv[1])
 threshold = int(sys.argv[2])

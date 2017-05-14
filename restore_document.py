@@ -2,11 +2,10 @@ import cv2
 import numpy as np
 import sys
 
-from document_restorer.operations.imgbin import MorphCloseBinarizer
-from document_restorer.restore.match import VerticalShiftFragmentsConnector
-from document_restorer.restore.match import HarrisFragmentsContentMatcher, SobelFragmentsContentMatcher
-from document_restorer.restore.sequence import find_sequence, find_most_probable_sequence, restore_document
-from restore.collect import FragmentsCollector
+from core.operations.imgbin import MorphCloseBinarizer
+from core.restore.match import VerticalShiftFragmentsConnector, HarrisFragmentsContentMatcher, SobelFragmentsContentMatcher
+from core.restore.sequence import find_sequence, find_most_probable_sequence, restore_document
+from core.restore.collect import FragmentsCollector
 
 img_path = str(sys.argv[1])
 threshold = int(sys.argv[2])

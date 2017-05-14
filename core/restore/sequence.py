@@ -1,6 +1,6 @@
 import numpy as np
-from document_restorer.operations.util import find_max
-from document_restorer.operations.util import *
+from core.operations.util import find_max
+from core.operations.util import *
 
 
 class FragmentsSequenceBuilder(object):

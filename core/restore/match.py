@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-from ..operations.util import *
+from core.operations.util import *
 
 
 class FragmentsConnector(object):

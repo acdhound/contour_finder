@@ -22,8 +22,8 @@ for f in fragments:
     cv2.putText(img_colored, str(fragments.index(f)),
                 (10, f.source_rect.y + f.source_rect.h/2 + 8), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 255))
 
-cv2.imwrite('segmented.png', img_colored)
-cv2.imshow('segmented', img_colored)
+cv2.imwrite('fragments.png', img_colored)
+cv2.imshow('fragments', img_colored)
 cv2.waitKey(0)
 
 exit(0)

@@ -1,6 +1,6 @@
 import numpy as np
 from core.operations.util import find_max
-from core.operations.util import *
+from core.operations.util import copy_to
 
 
 class FragmentsSequenceBuilder(object):
